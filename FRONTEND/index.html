@@ -9,6 +9,39 @@
     <title>Járólap Kalkulátor</title>
   </head>
   <body>
+    <div class="container">
+      <h1 class="my-4">Járólap Kalkulátor</h1>
+      <form id="tileForm">
+        <div class="mb-3">
+          <label for="width" class="form-label">Burkolandó terület szélessége (m)</label>
+          <input type="number" class="form-control" id="width" required />
+        </div>
+        <div class="mb-3"
+          <label for="height" class="form-label">Burkolandó terület magassága (m)</label>
+          <input type="number" class="form-control" id="height" required />
+        </div>
+        <div class="mb-3">
+          <label for="tileSize" class="form-label">Válasszon járólapot</label>
+          <select class="form-select" id="tileSize" required>
+            <option value="10x10">10x10 cm</option>
+            <option value="15x15">15x15 cm</option>
+            <option value="10x30">10x30 cm</option>
+            <option value="30x30">30x30 cm</option>
+            <option value="30x60">30x60 cm</option>
+            <option value="60x60">60x60 cm</option>
+            <option value="45x90">45x90 cm</option>
+            <option value="90x90">90x90 cm</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-dark">Számítás</button>
+      </form>
+      <hr />
+      <div class="mt-4" id="result">
+        <h3>Számított eredmény:</h3>
+        <p id="tileCount"></p>
+        <div id="tilePreview" class="tile-preview"></div>
+      </div>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>
