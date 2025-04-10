@@ -5,28 +5,35 @@ body {
   margin-left: 0px;
   margin-right: 0px;
   padding: 0;
-  background-color: #f0f0f0;
+  background-color: #fdf1f7;
 }
 
 .container {
   background-color: white;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 }
 
 .tile-preview {
   margin: 20px 0;
   background-color: #fff;
   overflow: hidden;
+  position: relative;
+  border: 2px solid #333;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .tile {
+  position: absolute;
+  border: 1px solid #7e7e7e;
+  background-color: #ffdaec;
   transition: opacity 0.2s;
 }
 
 .tile:hover {
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 #result {
