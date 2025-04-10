@@ -4,6 +4,7 @@ body {
   margin-top: 20px;
   margin-left: 0px;
   margin-right: 0px;
+  margin-bottom: 0px;
   padding: 0;
   background-color: #fdf1f7;
 }
@@ -13,6 +14,7 @@ body {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 40px;
 }
 
 .tile-preview {
@@ -23,6 +25,8 @@ body {
   border: 2px solid #333;
   margin-top: 20px;
   margin-bottom: 40px;
+  max-width: 100%;
+  height: auto;
 }
 
 .tile {
@@ -42,24 +46,37 @@ body {
   border-radius: 5px;
 }
 
-@media (min-width: 1000px) {
-  .html,
-  body {
-    margin-left: 180px;
-    margin-right: 180px;
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+    margin-bottom: 60px;
+  }
+
+  #result {
+    padding: 15px;
   }
 }
+
+@media (min-width: 1000px) {
+  html,
+  body {
+    margin-left: 140px;
+    margin-right: 140px;
+  }
+}
+
 @media (min-width: 1500px) {
-  .html,
+  html,
+  body {
+    margin-left: 250px;
+    margin-right: 250px;
+  }
+}
+
+@media (min-width: 1800px) {
+  html,
   body {
     margin-left: 300px;
     margin-right: 300px;
-  }
-}
-@media (min-width: 1700px) {
-  .html,
-  body {
-    margin-left: 400px;
-    margin-right: 400px;
   }
 }
