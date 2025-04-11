@@ -40,70 +40,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const height = parseFloat(heightInput.value);
     const tileSize = document.getElementById("tileSize").value;
 
-    const [tileSizeWidth, tileSizeHeight] = tileSize.split("x").map((size) => parseInt(size));
-
-    // Client-side calculation instead of API call (I will change it later, it's just for testing)
-    const result = calculateTilesLocally(width, height, tileSizeWidth, tileSizeHeight);
-    displayResults(result, width, height);
-  });
-
-  function calculateTilesLocally(areaWidth, areaHeight, tileWidth, tileHeight) {
-    // centimeters to meters
-    const tileSizeWidth = tileWidth / 100;
-    const tileSizeHeight = tileHeight / 100;
-
-    // Calculate for horizontal orientation (original orientation)
-    const horizontalTilesX = Math.ceil(areaWidth / tileSizeWidth);
-    const horizontalTilesY = Math.ceil(areaHeight / tileSizeHeight);
-    const totalTilesHorizontal = horizontalTilesX * horizontalTilesY;
-
-    // Calculate for vertical orientation (swapped orientation)
-    const verticalTilesX = Math.ceil(areaWidth / tileSizeHeight);
-    const verticalTilesY = Math.ceil(areaHeight / tileSizeWidth);
-    const totalTilesVertical = verticalTilesX * verticalTilesY;
-
-    // Determine which orientation requires fewer tiles
-    const useHorizontalOrientation = totalTilesHorizontal <= totalTilesVertical;
-
-    // Set up the result data structure
-    let tiles = [];
-    let finalTileWidth, finalTileHeight;
-    let tilesX, tilesY;
-
-    if (useHorizontalOrientation) {
-      finalTileWidth = tileSizeWidth;
-      finalTileHeight = tileSizeHeight;
-      tilesX = horizontalTilesX;
-      tilesY = horizontalTilesY;
-    } else {
-      finalTileWidth = tileSizeHeight;
-      finalTileHeight = tileSizeWidth;
-      tilesX = verticalTilesX;
-      tilesY = verticalTilesY;
-    }
-
-    // Generate tile placement data
-    for (let y = 0; y < tilesY; y++) {
-      for (let x = 0; x < tilesX; x++) {
-        tiles.push({
-          x: x * finalTileWidth,
-          y: y * finalTileHeight,
-          width: finalTileWidth,
-          height: finalTileHeight,
-        });
-      }
-    }
-
-    return {
-      totalTiles: useHorizontalOrientation ? totalTilesHorizontal : totalTilesVertical,
-      horizontalOrientation: useHorizontalOrientation,
-      tileWidth: useHorizontalOrientation ? tileWidth : tileHeight,
-      tileHeight: useHorizontalOrientation ? tileHeight : tileWidth,
-      tiles: tiles,
-      areaWidth: areaWidth,
-      areaHeight: areaHeight,
+    const requestData = {
+      width: width,
+      height: height,
+      tileSize: tileSize,
     };
-  }
+
+    fetch("ide-majd-a-linket", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        displayResults(data, width, height);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Hiba történt a számítás során. Kérjük, próbálja újra később.");
+      });
+  });
 
   function displayResults(data, areaWidth, areaHeight) {
     resultSection.style.display = "block";
@@ -140,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
       previewWidth = previewHeight / aspectRatio;
     }
 
-    // Calculate scale factor based on actual dimensions
     const scaleFactor = previewWidth / (data.areaWidth * 100);
 
     tilePreviewElement.style.width = `${previewWidth}px`;
