@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return response.json();
       })
       .then((data) => {
-        displayResults(data, areaWidth, areaHeight);
+        displayResults(data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -86,34 +86,33 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
-  function displayResults(data, areaWidth, areaHeight) {
+  function displayResults(data) {
     resultSection.style.display = "block";
 
     const totalTiles = data.totalTiles;
     const orientation = data.orientation ? "függőleges" : "vízszintes";
     const tileWidth = data.tileWidth;
     const tileHeight = data.tileHeight;
+    const totalArea = data.totalArea.toFixed(2);
 
     tileCountElement.innerHTML = `
-          <strong>Szükséges járólapok száma:</strong> ${totalTiles} db (${
-      (totalTiles * tileHeight * tileWidth) / 10000
-    } m&sup2) <br>
+          <strong>Szükséges járólapok száma:</strong> ${totalTiles} db (${totalArea} m&sup2;) <br>
           <strong>Optimális elhelyezés:</strong> ${orientation}<br>
           <strong>Járólap méret:</strong> ${tileWidth}x${tileHeight} cm
       `;
 
-    renderTilePreview(data, areaWidth, areaHeight);
+    renderTilePreview(data);
 
     window.addEventListener("resize", function () {
-      renderTilePreview(data, areaWidth, areaHeight);
+      renderTilePreview(data);
     });
   }
 
-  function renderTilePreview(data, areaWidth, areaHeight) {
+  function renderTilePreview(data) {
     tilePreviewElement.innerHTML = "";
 
     const containerWidth = tilePreviewElement.parentElement.clientWidth - 40;
-    const aspectRatio = areaHeight / areaWidth;
+    const aspectRatio = data.areaHeight / data.areaWidth;
 
     let previewWidth = Math.min(containerWidth, 700);
     let previewHeight = previewWidth * aspectRatio;
@@ -129,77 +128,25 @@ document.addEventListener("DOMContentLoaded", function () {
     tilePreviewElement.style.border = "1px solid #ccc";
     tilePreviewElement.style.overflow = "hidden";
 
-    const scaleFactor = previewWidth / areaWidth;
-    const tilePxWidth = data.tileWidth * scaleFactor;
-    const tilePxHeight = data.tileHeight * scaleFactor;
-
-    const completeTilesX = Math.floor(areaWidth / data.tileWidth);
-    const completeTilesY = Math.floor(areaHeight / data.tileHeight);
-
-    const remainingWidth = areaWidth % data.tileWidth;
-    const remainingHeight = areaHeight % data.tileHeight;
-
+    const scaleFactor = previewWidth / data.areaWidth;
     const tileColors = ["#cccccc", "#f2e1ef", "#faf5f9"];
 
-    for (let y = 0; y < completeTilesY; y++) {
-      for (let x = 0; x < completeTilesX; x++) {
-        const colorIndex = (x + y) % 3;
-        addTile(x * tilePxWidth, y * tilePxHeight, tilePxWidth, tilePxHeight, tileColors[colorIndex]);
-      }
-    }
-
-    if (remainingWidth > 0) {
-      for (let y = 0; y < completeTilesY; y++) {
-        const colorIndex = (completeTilesX + y) % 3;
-        addTile(
-          completeTilesX * tilePxWidth,
-          y * tilePxHeight,
-          remainingWidth * scaleFactor,
-          tilePxHeight,
-          tileColors[colorIndex]
-        );
-      }
-    }
-
-    if (remainingHeight > 0) {
-      for (let x = 0; x < completeTilesX; x++) {
-        const colorIndex = (x + completeTilesY) % 3;
-        addTile(
-          x * tilePxWidth,
-          completeTilesY * tilePxHeight,
-          tilePxWidth,
-          remainingHeight * scaleFactor,
-          tileColors[colorIndex]
-        );
-      }
-    }
-
-    if (remainingWidth > 0 && remainingHeight > 0) {
-      const colorIndex = (completeTilesX + completeTilesY) % 3;
-      addTile(
-        completeTilesX * tilePxWidth,
-        completeTilesY * tilePxHeight,
-        remainingWidth * scaleFactor,
-        remainingHeight * scaleFactor,
-        tileColors[colorIndex]
-      );
-    }
-
-    function addTile(left, top, width, height, backgroundColor) {
+    // Render all tiles from the backend data
+    data.tiles.forEach((tile) => {
       const tileElement = document.createElement("div");
       tileElement.className = "tile";
 
       tileElement.style.position = "absolute";
-      tileElement.style.left = `${left}px`;
-      tileElement.style.top = `${top}px`;
-      tileElement.style.width = `${width}px`;
-      tileElement.style.height = `${height}px`;
+      tileElement.style.left = `${tile.x * scaleFactor}px`;
+      tileElement.style.top = `${tile.y * scaleFactor}px`;
+      tileElement.style.width = `${tile.width * scaleFactor}px`;
+      tileElement.style.height = `${tile.height * scaleFactor}px`;
 
-      tileElement.style.backgroundColor = backgroundColor;
+      tileElement.style.backgroundColor = tileColors[tile.colorIndex];
       tileElement.style.border = "1px solid #bbb";
       tileElement.style.boxSizing = "border-box";
 
       tilePreviewElement.appendChild(tileElement);
-    }
+    });
   }
 });
