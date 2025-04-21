@@ -23,13 +23,13 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     })
     .catch((error) => {
-      console.error("Error fetching tile sizes:", error);
+      console.error("Hiba a járólap méretek lekérésében:", error);
     });
 
   function validatePositiveInput(input) {
     const value = parseFloat(input.value);
     if (isNaN(value) || value <= 0) {
-      input.setCustomValidity("Az értéknek nagyobbnak kell lennie, mint 0");
+      input.setCustomValidity("Az értéknek nagyobbnak kell lennie, mint 0.");
       input.reportValidity();
       return false;
     } else {
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Hálózati hiba.");
         }
         return response.json();
       })
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        alert("Hiba történt a számítás során. Kérjük, próbálja újra később.");
+        alert("Hiba történt a számítás során.");
       });
   });
 
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
     tileCountElement.innerHTML = `
           <strong>Szükséges járólapok száma:</strong> ${totalTiles} db (${
       (totalTiles * tileHeight * tileWidth) / 10000
-    } négyzetméter) <br>
+    } m&sup2) <br>
           <strong>Optimális elhelyezés:</strong> ${orientation}<br>
           <strong>Járólap méret:</strong> ${tileWidth}x${tileHeight} cm
       `;
@@ -127,25 +127,20 @@ document.addEventListener("DOMContentLoaded", function () {
     tilePreviewElement.style.height = `${previewHeight}px`;
     tilePreviewElement.style.position = "relative";
     tilePreviewElement.style.border = "1px solid #ccc";
-    tilePreviewElement.style.overflow = "hidden"; // Hide tiles that extend beyond the area
+    tilePreviewElement.style.overflow = "hidden";
 
-    // Size of tiles in preview pixels
     const scaleFactor = previewWidth / areaWidth;
     const tilePxWidth = data.tileWidth * scaleFactor;
     const tilePxHeight = data.tileHeight * scaleFactor;
 
-    // Calculate how many whole tiles we need
     const completeTilesX = Math.floor(areaWidth / data.tileWidth);
     const completeTilesY = Math.floor(areaHeight / data.tileHeight);
 
-    // Calculate the remaining space that needs partial tiles
     const remainingWidth = areaWidth % data.tileWidth;
     const remainingHeight = areaHeight % data.tileHeight;
 
-    // Colors for better visualization
     const tileColors = ["#cccccc", "#f2e1ef", "#faf5f9"];
 
-    // Add complete tiles
     for (let y = 0; y < completeTilesY; y++) {
       for (let x = 0; x < completeTilesX; x++) {
         const colorIndex = (x + y) % 3;
@@ -153,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Add partial tiles along the right edge
     if (remainingWidth > 0) {
       for (let y = 0; y < completeTilesY; y++) {
         const colorIndex = (completeTilesX + y) % 3;
@@ -167,7 +161,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Add partial tiles along the bottom edge
     if (remainingHeight > 0) {
       for (let x = 0; x < completeTilesX; x++) {
         const colorIndex = (x + completeTilesY) % 3;
@@ -181,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // Add the corner piece if both width and height have remainders
     if (remainingWidth > 0 && remainingHeight > 0) {
       const colorIndex = (completeTilesX + completeTilesY) % 3;
       addTile(
@@ -193,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    // Helper function to add a tile to the preview
     function addTile(left, top, width, height, backgroundColor) {
       const tileElement = document.createElement("div");
       tileElement.className = "tile";
