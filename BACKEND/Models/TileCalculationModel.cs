@@ -13,6 +13,19 @@ namespace TileCalculator.Models
         public bool Orientation { get; set; } // true = horizontal, false = vertical
         public double TileWidth { get; set; }
         public double TileHeight { get; set; }
+        public double AreaWidth { get; set; }
+        public double AreaHeight { get; set; }
+        public double TotalArea { get; set; } // Total area of tiles in square meters
+        public List<TileInfo> Tiles { get; set; } = new List<TileInfo>();
+    }
+
+    public class TileInfo
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public int ColorIndex { get; set; }
     }
 
     public class TileSize
