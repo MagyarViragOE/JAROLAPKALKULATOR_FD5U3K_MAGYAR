@@ -23,15 +23,13 @@ namespace TileCalculator.Services
                 throw new ArgumentException("Invalid tile size");
             }
 
-            // Normal orientation (as specified in the tile size)
             var normalTiles = CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Width, tileSize.Height);
             
-            // Only calculate rotated orientation if width and height are different
             var rotatedTiles = tileSize.Width == tileSize.Height ? 
-                normalTiles : // If square, rotation doesn't matter
+                normalTiles : 
                 CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Height, tileSize.Width);
 
-            // For non-square tiles like 10x30, default orientation is vertical (10 width, 30 height)
+            
             bool useNormalOrientation = normalTiles <= rotatedTiles;
 
             if (useNormalOrientation)
@@ -39,7 +37,7 @@ namespace TileCalculator.Services
                 return new TileCalculationResponse
                 {
                     TotalTiles = normalTiles,
-                    Orientation = true, // true = using original orientation (width × height)
+                    Orientation = true, 
                     TileWidth = tileSize.Width,
                     TileHeight = tileSize.Height
                 };
@@ -49,7 +47,7 @@ namespace TileCalculator.Services
                 return new TileCalculationResponse
                 {
                     TotalTiles = rotatedTiles,
-                    Orientation = false, // false = rotated orientation (height × width)
+                    Orientation = false,
                     TileWidth = tileSize.Height,
                     TileHeight = tileSize.Width
                 };
