@@ -2,28 +2,24 @@ html,
 body {
   height: 100%;
   margin-top: 20px;
-  margin-left: 0px;
-  margin-right: 0px;
-  margin-bottom: 0px;
-  padding: 0;
   background-color: #fdf1f7;
 }
 
 .container {
   background-color: white;
   padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  border-radius: 22px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 40px;
 }
 
 .tile-preview {
   margin-top: 20px;
   margin-bottom: 40px;
+  margin: auto;
 }
 
 .tile {
-  position: absolute;
   transition: opacity 0.2s;
 }
 
@@ -35,7 +31,7 @@ body {
 #result {
   background-color: #f8f9fa;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 22px;
 }
 
 @media (max-width: 768px) {
