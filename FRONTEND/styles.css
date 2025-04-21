@@ -18,26 +18,18 @@ body {
 }
 
 .tile-preview {
-  margin: 20px 0;
-  background-color: #fff;
-  overflow: hidden;
-  position: relative;
-  border: 2px solid #333;
   margin-top: 20px;
   margin-bottom: 40px;
-  max-width: 100%;
-  height: auto;
 }
 
 .tile {
   position: absolute;
-  border: 1px solid #7e7e7e;
-  background-color: #ffdaec;
   transition: opacity 0.2s;
 }
 
 .tile:hover {
-  opacity: 0.4;
+  background-color: white;
+  opacity: 0.3;
 }
 
 #result {

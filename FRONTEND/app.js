@@ -8,6 +8,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const widthInput = document.getElementById("width");
   const heightInput = document.getElementById("height");
+  const tileSizeSelect = document.getElementById("tileSize");
+
+  // Clear existing options before fetching from API
+  tileSizeSelect.innerHTML = "";
+
+  // Fetch available tile sizes from the API
+  fetch("http://localhost:5086/api/TileCalculation/tile-sizes")
+    .then((response) => response.json())
+    .then((tileSizes) => {
+      tileSizes.forEach((size) => {
+        const option = document.createElement("option");
+        option.value = size;
+        option.textContent = size + " cm";
+        tileSizeSelect.appendChild(option);
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching tile sizes:", error);
+    });
 
   function validatePositiveInput(input) {
     const value = parseFloat(input.value);
@@ -36,17 +55,18 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const width = parseFloat(widthInput.value);
-    const height = parseFloat(heightInput.value);
+    // Convert meters to centimeters
+    const areaWidth = parseFloat(widthInput.value) * 100;
+    const areaHeight = parseFloat(heightInput.value) * 100;
     const tileSize = document.getElementById("tileSize").value;
 
     const requestData = {
-      width: width,
-      height: height,
+      areaWidth: areaWidth,
+      areaHeight: areaHeight,
       tileSize: tileSize,
     };
 
-    fetch("ide-majd-a-linket", {
+    fetch("http://localhost:5086/api/TileCalculation/calculate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return response.json();
       })
       .then((data) => {
-        displayResults(data, width, height);
+        displayResults(data, areaWidth, areaHeight);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -72,28 +92,30 @@ document.addEventListener("DOMContentLoaded", function () {
     resultSection.style.display = "block";
 
     const totalTiles = data.totalTiles;
-    const orientation = data.horizontalOrientation ? "vízszintes" : "függőleges";
+    const orientation = data.orientation ? "függőleges" : "vízszintes";
     const tileWidth = data.tileWidth;
     const tileHeight = data.tileHeight;
 
     tileCountElement.innerHTML = `
-          <strong>Szükséges járólapok száma:</strong> ${totalTiles} db<br>
+          <strong>Szükséges járólapok száma:</strong> ${totalTiles} db (${
+      (totalTiles * tileHeight * tileWidth) / 10000
+    } négyzetméter) <br>
           <strong>Optimális elhelyezés:</strong> ${orientation}<br>
           <strong>Járólap méret:</strong> ${tileWidth}x${tileHeight} cm
       `;
 
-    renderTilePreview(data);
+    renderTilePreview(data, areaWidth, areaHeight);
 
     window.addEventListener("resize", function () {
-      renderTilePreview(data);
+      renderTilePreview(data, areaWidth, areaHeight);
     });
   }
 
-  function renderTilePreview(data) {
+  function renderTilePreview(data, areaWidth, areaHeight) {
     tilePreviewElement.innerHTML = "";
 
     const containerWidth = tilePreviewElement.parentElement.clientWidth - 40;
-    const aspectRatio = data.areaHeight / data.areaWidth;
+    const aspectRatio = areaHeight / areaWidth;
 
     let previewWidth = Math.min(containerWidth, 700);
     let previewHeight = previewWidth * aspectRatio;
@@ -103,23 +125,92 @@ document.addEventListener("DOMContentLoaded", function () {
       previewWidth = previewHeight / aspectRatio;
     }
 
-    const scaleFactor = previewWidth / (data.areaWidth * 100);
-
     tilePreviewElement.style.width = `${previewWidth}px`;
     tilePreviewElement.style.height = `${previewHeight}px`;
+    tilePreviewElement.style.position = "relative";
+    tilePreviewElement.style.border = "1px solid #ccc";
+    tilePreviewElement.style.overflow = "hidden"; // Hide tiles that extend beyond the area
 
-    const tiles = data.tiles;
+    // Size of tiles in preview pixels
+    const scaleFactor = previewWidth / areaWidth;
+    const tilePxWidth = data.tileWidth * scaleFactor;
+    const tilePxHeight = data.tileHeight * scaleFactor;
 
-    tiles.forEach((tile) => {
+    // Calculate how many whole tiles we need
+    const completeTilesX = Math.floor(areaWidth / data.tileWidth);
+    const completeTilesY = Math.floor(areaHeight / data.tileHeight);
+
+    // Calculate the remaining space that needs partial tiles
+    const remainingWidth = areaWidth % data.tileWidth;
+    const remainingHeight = areaHeight % data.tileHeight;
+
+    // Colors for better visualization
+    const tileColors = ["#cccccc", "#f2e1ef", "#faf5f9"];
+
+    // Add complete tiles
+    for (let y = 0; y < completeTilesY; y++) {
+      for (let x = 0; x < completeTilesX; x++) {
+        const colorIndex = (x + y) % 3;
+        addTile(x * tilePxWidth, y * tilePxHeight, tilePxWidth, tilePxHeight, tileColors[colorIndex]);
+      }
+    }
+
+    // Add partial tiles along the right edge
+    if (remainingWidth > 0) {
+      for (let y = 0; y < completeTilesY; y++) {
+        const colorIndex = (completeTilesX + y) % 3;
+        addTile(
+          completeTilesX * tilePxWidth,
+          y * tilePxHeight,
+          remainingWidth * scaleFactor,
+          tilePxHeight,
+          tileColors[colorIndex]
+        );
+      }
+    }
+
+    // Add partial tiles along the bottom edge
+    if (remainingHeight > 0) {
+      for (let x = 0; x < completeTilesX; x++) {
+        const colorIndex = (x + completeTilesY) % 3;
+        addTile(
+          x * tilePxWidth,
+          completeTilesY * tilePxHeight,
+          tilePxWidth,
+          remainingHeight * scaleFactor,
+          tileColors[colorIndex]
+        );
+      }
+    }
+
+    // Add the corner piece if both width and height have remainders
+    if (remainingWidth > 0 && remainingHeight > 0) {
+      const colorIndex = (completeTilesX + completeTilesY) % 3;
+      addTile(
+        completeTilesX * tilePxWidth,
+        completeTilesY * tilePxHeight,
+        remainingWidth * scaleFactor,
+        remainingHeight * scaleFactor,
+        tileColors[colorIndex]
+      );
+    }
+
+    // Helper function to add a tile to the preview
+    function addTile(left, top, width, height, backgroundColor) {
       const tileElement = document.createElement("div");
       tileElement.className = "tile";
 
-      tileElement.style.left = `${tile.x * 100 * scaleFactor}px`;
-      tileElement.style.top = `${tile.y * 100 * scaleFactor}px`;
-      tileElement.style.width = `${tile.width * 100 * scaleFactor}px`;
-      tileElement.style.height = `${tile.height * 100 * scaleFactor}px`;
+      tileElement.style.position = "absolute";
+      tileElement.style.left = `${left}px`;
+      tileElement.style.top = `${top}px`;
+      tileElement.style.width = `${width}px`;
+      tileElement.style.height = `${height}px`;
+
+      tileElement.style.backgroundColor = backgroundColor;
+      tileElement.style.border = "1px solid #bbb";
+      tileElement.style.boxSizing = "border-box";
 
       tilePreviewElement.appendChild(tileElement);
-    });
+    }
   }
 });
