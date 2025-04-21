@@ -17,9 +17,15 @@ body {
   margin-top: 20px;
   margin-bottom: 40px;
   margin: auto;
+  position: relative;
+  border: 1px solid #ccc;
+  overflow: hidden;
 }
 
 .tile {
+  position: absolute;
+  border: 1px solid #bbb;
+  box-sizing: border-box;
   transition: opacity 0.2s;
 }
 
@@ -28,10 +34,23 @@ body {
   opacity: 0.3;
 }
 
+.tile-color-0 {
+  background-color: #cccccc;
+}
+
+.tile-color-1 {
+  background-color: #f2e1ef;
+}
+
+.tile-color-2 {
+  background-color: #faf5f9;
+}
+
 #result {
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 22px;
+  display: none;
 }
 
 @media (max-width: 768px) {

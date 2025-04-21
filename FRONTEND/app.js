@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const scaleFactor = previewWidth / data.areaWidth;
     const tileColors = ["#cccccc", "#f2e1ef", "#faf5f9"];
 
-    // Render all tiles from the backend data
     data.tiles.forEach((tile) => {
       const tileElement = document.createElement("div");
       tileElement.className = "tile";
