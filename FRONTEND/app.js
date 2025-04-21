@@ -10,10 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const heightInput = document.getElementById("height");
   const tileSizeSelect = document.getElementById("tileSize");
 
-  // Clear existing options before fetching from API
   tileSizeSelect.innerHTML = "";
 
-  // Fetch available tile sizes from the API
   fetch("http://localhost:5086/api/TileCalculation/tile-sizes")
     .then((response) => response.json())
     .then((tileSizes) => {
