@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const tileCountElement = document.getElementById("tileCount");
   const tilePreviewElement = document.getElementById("tilePreview");
 
-  resultSection.style.display = "none";
-
   const widthInput = document.getElementById("width");
   const heightInput = document.getElementById("height");
   const tileSizeSelect = document.getElementById("tileSize");
@@ -122,28 +120,21 @@ document.addEventListener("DOMContentLoaded", function () {
       previewWidth = previewHeight / aspectRatio;
     }
 
+    // Set dimensions through JavaScript (these are dynamic)
     tilePreviewElement.style.width = `${previewWidth}px`;
     tilePreviewElement.style.height = `${previewHeight}px`;
-    tilePreviewElement.style.position = "relative";
-    tilePreviewElement.style.border = "1px solid #ccc";
-    tilePreviewElement.style.overflow = "hidden";
 
     const scaleFactor = previewWidth / data.areaWidth;
-    const tileColors = ["#cccccc", "#f2e1ef", "#faf5f9"];
 
     data.tiles.forEach((tile) => {
       const tileElement = document.createElement("div");
-      tileElement.className = "tile";
+      tileElement.className = `tile tile-color-${tile.colorIndex}`;
 
-      tileElement.style.position = "absolute";
+      // Position and size are dynamic and need to be calculated in JS
       tileElement.style.left = `${tile.x * scaleFactor}px`;
       tileElement.style.top = `${tile.y * scaleFactor}px`;
       tileElement.style.width = `${tile.width * scaleFactor}px`;
       tileElement.style.height = `${tile.height * scaleFactor}px`;
-
-      tileElement.style.backgroundColor = tileColors[tile.colorIndex];
-      tileElement.style.border = "1px solid #bbb";
-      tileElement.style.boxSizing = "border-box";
 
       tilePreviewElement.appendChild(tileElement);
     });
