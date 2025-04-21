@@ -11,16 +11,14 @@
   <body>
     <div class="container">
       <h1 class="my-4">Járólap Kalkulátor</h1>
-      <form id="tileForm" novalidate>
+      <form id="tileForm">
         <div class="mb-3">
           <label for="width" class="form-label">Burkolandó terület szélessége (m)</label>
           <input type="number" class="form-control" id="width" step="0.01" min="0.01" required />
-          <div class="invalid-feedback">A szélességnek nagyobbnak kell lennie, mint 0</div>
         </div>
         <div class="mb-3">
           <label for="height" class="form-label">Burkolandó terület magassága (m)</label>
           <input type="number" class="form-control" id="height" step="0.01" min="0.01" required />
-          <div class="invalid-feedback">A magasságnak nagyobbnak kell lennie, mint 0</div>
         </div>
         <div class="mb-3">
           <label for="tileSize" class="form-label">Válasszon járólapot:</label>

@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
       previewWidth = previewHeight / aspectRatio;
     }
 
-    // Set dimensions through JavaScript (these are dynamic)
     tilePreviewElement.style.width = `${previewWidth}px`;
     tilePreviewElement.style.height = `${previewHeight}px`;
 
@@ -130,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const tileElement = document.createElement("div");
       tileElement.className = `tile tile-color-${tile.colorIndex}`;
 
-      // Position and size are dynamic and need to be calculated in JS
       tileElement.style.left = `${tile.x * scaleFactor}px`;
       tileElement.style.top = `${tile.y * scaleFactor}px`;
       tileElement.style.width = `${tile.width * scaleFactor}px`;

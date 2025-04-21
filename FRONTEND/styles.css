@@ -11,6 +11,7 @@ body {
   border-radius: 22px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
   margin-bottom: 40px;
+  border: 1px solid #bbb;
 }
 
 .tile-preview {
@@ -18,7 +19,8 @@ body {
   margin-bottom: 40px;
   margin: auto;
   position: relative;
-  border: 1px solid #ccc;
+  border: 3px solid #afafaf;
+  border-radius: 2px;
   overflow: hidden;
 }
 
@@ -47,10 +49,11 @@ body {
 }
 
 #result {
-  background-color: #f8f9fa;
+  background-color: #f5f7f8;
   padding: 20px;
   border-radius: 22px;
   display: none;
+  border: 1px solid #dddddd;
 }
 
 @media (max-width: 768px) {
