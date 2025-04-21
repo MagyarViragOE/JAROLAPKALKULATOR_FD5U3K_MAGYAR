@@ -23,26 +23,21 @@ namespace TileCalculator.Services
                 throw new ArgumentException("Invalid tile size");
             }
 
-            // Calculate with normal orientation
             var normalResponse = CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Width, tileSize.Height, true);
             
-            // Calculate with rotated orientation (only if tile isn't square)
             var rotatedResponse = tileSize.Width == tileSize.Height ? 
                 normalResponse : 
                 CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Height, tileSize.Width, false);
 
-            // Return the better layout (fewer tiles)
             return normalResponse.TotalTiles <= rotatedResponse.TotalTiles ? normalResponse : rotatedResponse;
         }
 
         private TileCalculationResponse CalculateTileLayout(double areaWidth, double areaHeight, double tileWidth, double tileHeight, bool normalOrientation)
         {
-            // Calculate how many tiles we need
             int tilesInWidth = (int)Math.Ceiling(areaWidth / tileWidth);
             int tilesInHeight = (int)Math.Ceiling(areaHeight / tileHeight);
             int totalTiles = tilesInWidth * tilesInHeight;
             
-            // Calculate complete and partial tiles
             int completeTilesX = (int)(areaWidth / tileWidth);
             int completeTilesY = (int)(areaHeight / tileHeight);
             
@@ -51,7 +46,6 @@ namespace TileCalculator.Services
             
             var tiles = new List<TileInfo>();
             
-            // Add complete tiles
             for (int y = 0; y < completeTilesY; y++)
             {
                 for (int x = 0; x < completeTilesX; x++)
@@ -67,7 +61,6 @@ namespace TileCalculator.Services
                 }
             }
             
-            // Add partial tiles along the right edge
             if (remainingWidth > 0)
             {
                 for (int y = 0; y < completeTilesY; y++)
@@ -83,7 +76,6 @@ namespace TileCalculator.Services
                 }
             }
             
-            // Add partial tiles along the bottom edge
             if (remainingHeight > 0)
             {
                 for (int x = 0; x < completeTilesX; x++)
@@ -99,7 +91,6 @@ namespace TileCalculator.Services
                 }
             }
             
-            // Add the corner piece if both width and height have remainders
             if (remainingWidth > 0 && remainingHeight > 0)
             {
                 tiles.Add(new TileInfo

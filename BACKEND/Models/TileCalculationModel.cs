@@ -15,7 +15,7 @@ namespace TileCalculator.Models
         public double TileHeight { get; set; }
         public double AreaWidth { get; set; }
         public double AreaHeight { get; set; }
-        public double TotalArea { get; set; } // Total area of tiles in square meters
+        public double TotalArea { get; set; } 
         public List<TileInfo> Tiles { get; set; } = new List<TileInfo>();
     }
 
