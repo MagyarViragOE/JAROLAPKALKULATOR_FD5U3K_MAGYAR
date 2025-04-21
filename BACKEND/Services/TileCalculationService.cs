@@ -23,42 +23,106 @@ namespace TileCalculator.Services
                 throw new ArgumentException("Invalid tile size");
             }
 
-            var normalTiles = CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Width, tileSize.Height);
+            // Calculate with normal orientation
+            var normalResponse = CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Width, tileSize.Height, true);
             
-            var rotatedTiles = tileSize.Width == tileSize.Height ? 
-                normalTiles : 
-                CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Height, tileSize.Width);
+            // Calculate with rotated orientation (only if tile isn't square)
+            var rotatedResponse = tileSize.Width == tileSize.Height ? 
+                normalResponse : 
+                CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Height, tileSize.Width, false);
 
-            
-            bool useNormalOrientation = normalTiles <= rotatedTiles;
-
-            if (useNormalOrientation)
-            {
-                return new TileCalculationResponse
-                {
-                    TotalTiles = normalTiles,
-                    Orientation = true, 
-                    TileWidth = tileSize.Width,
-                    TileHeight = tileSize.Height
-                };
-            }
-            else
-            {
-                return new TileCalculationResponse
-                {
-                    TotalTiles = rotatedTiles,
-                    Orientation = false,
-                    TileWidth = tileSize.Height,
-                    TileHeight = tileSize.Width
-                };
-            }
+            // Return the better layout (fewer tiles)
+            return normalResponse.TotalTiles <= rotatedResponse.TotalTiles ? normalResponse : rotatedResponse;
         }
 
-        private int CalculateTileLayout(double areaWidth, double areaHeight, double tileWidth, double tileHeight)
+        private TileCalculationResponse CalculateTileLayout(double areaWidth, double areaHeight, double tileWidth, double tileHeight, bool normalOrientation)
         {
+            // Calculate how many tiles we need
             int tilesInWidth = (int)Math.Ceiling(areaWidth / tileWidth);
             int tilesInHeight = (int)Math.Ceiling(areaHeight / tileHeight);
-            return tilesInWidth * tilesInHeight;
+            int totalTiles = tilesInWidth * tilesInHeight;
+            
+            // Calculate complete and partial tiles
+            int completeTilesX = (int)(areaWidth / tileWidth);
+            int completeTilesY = (int)(areaHeight / tileHeight);
+            
+            double remainingWidth = areaWidth % tileWidth;
+            double remainingHeight = areaHeight % tileHeight;
+            
+            var tiles = new List<TileInfo>();
+            
+            // Add complete tiles
+            for (int y = 0; y < completeTilesY; y++)
+            {
+                for (int x = 0; x < completeTilesX; x++)
+                {
+                    tiles.Add(new TileInfo
+                    {
+                        X = x * tileWidth,
+                        Y = y * tileHeight,
+                        Width = tileWidth,
+                        Height = tileHeight,
+                        ColorIndex = (x + y) % 3
+                    });
+                }
+            }
+            
+            // Add partial tiles along the right edge
+            if (remainingWidth > 0)
+            {
+                for (int y = 0; y < completeTilesY; y++)
+                {
+                    tiles.Add(new TileInfo
+                    {
+                        X = completeTilesX * tileWidth,
+                        Y = y * tileHeight,
+                        Width = remainingWidth,
+                        Height = tileHeight,
+                        ColorIndex = (completeTilesX + y) % 3
+                    });
+                }
+            }
+            
+            // Add partial tiles along the bottom edge
+            if (remainingHeight > 0)
+            {
+                for (int x = 0; x < completeTilesX; x++)
+                {
+                    tiles.Add(new TileInfo
+                    {
+                        X = x * tileWidth,
+                        Y = completeTilesY * tileHeight,
+                        Width = tileWidth,
+                        Height = remainingHeight,
+                        ColorIndex = (x + completeTilesY) % 3
+                    });
+                }
+            }
+            
+            // Add the corner piece if both width and height have remainders
+            if (remainingWidth > 0 && remainingHeight > 0)
+            {
+                tiles.Add(new TileInfo
+                {
+                    X = completeTilesX * tileWidth,
+                    Y = completeTilesY * tileHeight,
+                    Width = remainingWidth,
+                    Height = remainingHeight,
+                    ColorIndex = (completeTilesX + completeTilesY) % 3
+                });
+            }
+            
+            return new TileCalculationResponse
+            {
+                TotalTiles = totalTiles,
+                Orientation = normalOrientation,
+                TileWidth = tileWidth,
+                TileHeight = tileHeight,
+                AreaWidth = areaWidth,
+                AreaHeight = areaHeight,
+                TotalArea = totalTiles * tileWidth * tileHeight / 10000, // Convert to square meters
+                Tiles = tiles
+            };
         }
 
         public List<string> GetAvailableTileSizes()
