@@ -67,7 +67,7 @@ body {
   }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 990px) {
   html,
   body {
     margin-left: 140px;
