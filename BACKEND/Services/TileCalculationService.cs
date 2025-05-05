@@ -1,6 +1,6 @@
-using TileCalculator.Models;
+using BACKEND.Models;
 
-namespace TileCalculator.Services
+namespace BACKEND.Services
 {
     public class TileCalculationService
     {

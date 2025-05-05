@@ -1,4 +1,4 @@
-namespace TileCalculator.Models
+namespace BACKEND.Models
 {
     public class TileCalculationRequest
     {

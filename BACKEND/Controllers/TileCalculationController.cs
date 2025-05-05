@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using TileCalculator.Models;
-using TileCalculator.Services;
+using BACKEND.Models;
+using BACKEND.Services;
 
-namespace TileCalculator.Controllers
+namespace BACKEND.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
