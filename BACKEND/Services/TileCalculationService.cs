@@ -29,14 +29,18 @@ namespace BACKEND.Services
                 normalResponse : 
                 CalculateTileLayout(request.AreaWidth, request.AreaHeight, tileSize.Height, tileSize.Width, false);
 
-            return normalResponse.TotalTiles <= rotatedResponse.TotalTiles ? normalResponse : rotatedResponse;
+            // (including partials)!!
+            int normalPieces = normalResponse.Tiles.Count;
+            int rotatedPieces = rotatedResponse.Tiles.Count;
+
+            // Choose the orientation with fewer actual pieces
+            return normalPieces <= rotatedPieces ? normalResponse : rotatedResponse;
         }
 
         private TileCalculationResponse CalculateTileLayout(double areaWidth, double areaHeight, double tileWidth, double tileHeight, bool normalOrientation)
         {
             int tilesInWidth = (int)Math.Ceiling(areaWidth / tileWidth);
             int tilesInHeight = (int)Math.Ceiling(areaHeight / tileHeight);
-            int totalTiles = tilesInWidth * tilesInHeight;
             
             int completeTilesX = (int)(areaWidth / tileWidth);
             int completeTilesY = (int)(areaHeight / tileHeight);
@@ -46,6 +50,7 @@ namespace BACKEND.Services
             
             var tiles = new List<TileInfo>();
             
+            // complete tiles
             for (int y = 0; y < completeTilesY; y++)
             {
                 for (int x = 0; x < completeTilesX; x++)
@@ -61,6 +66,7 @@ namespace BACKEND.Services
                 }
             }
             
+            // partial tiles along the right edge
             if (remainingWidth > 0)
             {
                 for (int y = 0; y < completeTilesY; y++)
@@ -76,6 +82,7 @@ namespace BACKEND.Services
                 }
             }
             
+            // partial tiles along the bottom edge
             if (remainingHeight > 0)
             {
                 for (int x = 0; x < completeTilesX; x++)
@@ -91,6 +98,7 @@ namespace BACKEND.Services
                 }
             }
             
+            //  the corner partial tile (if needed)
             if (remainingWidth > 0 && remainingHeight > 0)
             {
                 tiles.Add(new TileInfo
@@ -103,15 +111,17 @@ namespace BACKEND.Services
                 });
             }
             
+            double tileArea = tilesInWidth * tilesInHeight * tileWidth * tileHeight / 10000;
+            
             return new TileCalculationResponse
             {
-                TotalTiles = totalTiles,
+                TotalTiles = tilesInWidth * tilesInHeight, 
                 Orientation = normalOrientation,
                 TileWidth = tileWidth,
                 TileHeight = tileHeight,
                 AreaWidth = areaWidth,
                 AreaHeight = areaHeight,
-                TotalArea = totalTiles * tileWidth * tileHeight / 10000, // Convert to square meters
+                TotalArea = tileArea, 
                 Tiles = tiles
             };
         }

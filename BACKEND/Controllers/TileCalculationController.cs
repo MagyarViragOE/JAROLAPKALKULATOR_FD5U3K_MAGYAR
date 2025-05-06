@@ -22,7 +22,7 @@ namespace BACKEND.Controllers
         }
 
         [HttpPost("calculate")]
-        public ActionResult<TileCalculationResponse> CalculateTiles(TileCalculationRequest request)
+        public ActionResult<TileCalculationResponse> CalculateTiles([FromBody] TileCalculationRequest request)
         {
             if (request.AreaWidth <= 0 || request.AreaHeight <= 0)
             {
